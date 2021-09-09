@@ -1,8 +1,7 @@
-import * as THREE from "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.module.min.js";
-import { createRenderer } from "../../systems/renderer.js";
+import * as THREE from "../../../js/build/three.module.js";
+import { PositionalAudioHelper } from "../../../js/examples/jsm/helpers/PositionalAudioHelper.js";
 import { scene } from "../../World.js";
 import { camera } from "../../World.js";
-import { PositionalAudioHelper } from "https://threejsfundamentals.org/threejs/resources/threejs/r119/examples/jsm/helpers/PositionalAudioHelper.js";
 
 let last = performance.now();
 let birds;
@@ -114,10 +113,6 @@ function createLineBird() {
   birds.matrixAutoUpdate = false;
   birds.updateMatrix();
 
-  // const positionUniforms = birds.material.uniforms;
-  // positionUniforms["time"] = { value: 0.0 };
-  // positionUniforms["delta"] = { value: 0.0 };
-
   const listener = new THREE.AudioListener();
   camera.add(listener);
 
@@ -130,6 +125,7 @@ function createLineBird() {
     audio.setRefDistance(400);
     audio.setDirectionalCone(100, 270, 0);
     audio.rotation.set(0, Math.PI / 2, 0);
+    audio.setLoop(true);
 
     const helper = new PositionalAudioHelper(audio, 30);
     // audio.add(helper);
@@ -147,9 +143,6 @@ function createLineBird() {
 
     velocity = new THREE.Vector3();
     acceleration = new THREE.Vector3().random(Math.sin());
-
-    // const data = analyser.getFrequencyData();
-    // const dataAvg = analyser.getAverageFrequency();
 
     if (delta > 1) delta = 1; // safety cap on large deltas
     last = now;

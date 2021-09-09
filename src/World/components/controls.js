@@ -1,5 +1,5 @@
-import * as THREE from "https://unpkg.com/three@0.121.1/build/three.module.js";
-import { PointerLockControls } from "https://threejsfundamentals.org/threejs/resources/threejs/r119/examples/jsm/controls/PointerLockControls.js";
+import * as THREE from "../../js/build/three.module.js";
+import { PointerLockControls } from "../../js/examples/jsm/controls/PointerLockControls.js";
 import { scene } from "../World.js";
 import { camera } from "../World.js";
 // import { values } from "../../main_new.js";

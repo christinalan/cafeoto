@@ -17,6 +17,8 @@ import { createRenderer } from "./systems/renderer.js";
 import { Resizer } from "./systems/Resizer.js";
 import { Loop } from "./systems/Loop.js";
 
+import { checkClipping } from "./components/audio.js";
+
 let camera;
 let renderer;
 let scene;
@@ -38,7 +40,7 @@ class World {
     // const orbitControls = createOrbitControls(camera, renderer.domElement);
 
     const ambientL = createAmbient();
-    // const dirL = createDirectional();
+    const dirL = createDirectional();
     const floors = createFloor();
 
     //animations
@@ -61,7 +63,6 @@ class World {
     );
 
     scene.add(ambientL, birds, birdLine);
-    // scene.add(ambientL, birds, birdLine);
 
     for (let i = 0; i < floors.length; i++) {
       scene.add(floors[i]);

@@ -1,4 +1,4 @@
-import { DeviceOrientationControls } from "https://threejsfundamentals.org/threejs/resources/threejs/r119/examples/jsm/controls/DeviceOrientationControls.js";
+import { DeviceOrientationControls } from "../../js/examples/jsm/controls/DeviceOrientationControls.js";
 
 function createDeviceControls(camera) {
   const deviceControls = new DeviceOrientationControls(camera);
