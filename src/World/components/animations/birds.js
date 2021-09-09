@@ -85,14 +85,6 @@ function createLineBird() {
     new THREE.InstancedBufferAttribute(new Float32Array(orientationsEnd), 4)
   );
 
-  // const birdUniforms = {
-  //   texturePosition: { value: null },
-  //   textureVelocity: { value: null },
-  //   time: { value: 0.0 },
-  //   delta: { value: 0.0 },
-  //   sineTime: { value: 1.0 },
-  // };
-
   const material = new THREE.RawShaderMaterial({
     uniforms: {
       texturePosition: { value: 0.0 },
@@ -123,6 +115,7 @@ function createLineBird() {
     audio.setBuffer(buffer);
     audio.setDistanceModel("exponential");
     audio.setRefDistance(400);
+    audio.setRolloffFactor(200);
     audio.setDirectionalCone(100, 270, 0);
     audio.rotation.set(0, Math.PI / 2, 0);
     audio.setLoop(true);

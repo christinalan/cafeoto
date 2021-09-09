@@ -3,7 +3,7 @@ import { PositionalAudioHelper } from "../../js/examples/jsm/helpers/PositionalA
 import { camera } from "../World.js";
 
 let floors = [];
-let floor, floor1;
+let floor, floor1, floor2, floor3;
 let audio, audio1;
 
 function createFloor() {
@@ -32,13 +32,22 @@ function createFloor() {
   floor1.rotation.set(Math.PI * -0.5, 0, 0);
   floor1.position.set(100, -100, -600);
 
-  floors.push(floor, floor1);
+  floor2 = new THREE.Mesh(floorGeometry, floorMaterial);
+  floor2.rotation.set(Math.PI * -0.5, 0, 0);
+  floor2.position.set(100, 0, -100);
+
+  floor3 = new THREE.Mesh(floorGeometry, floorMaterial1);
+  floor3.rotation.set(Math.PI * -0.5, 0, 0);
+  floor3.position.set(-100, -25, -100);
+
+  floors.push(floor, floor1, floor2, floor3);
 
   //audio attachment
 
   const audioLoader = new THREE.AudioLoader();
 
   const listener = new THREE.AudioListener();
+
   camera.add(listener);
 
   audioLoader.load("sounds/st_1.mp3", function (buffer) {
@@ -47,6 +56,7 @@ function createFloor() {
       audio.setBuffer(buffer);
       audio.setDistanceModel("exponential");
       audio.setRefDistance(2000);
+      audio.setRolloffFactor(500);
       audio.setDirectionalCone(90, 270, 0);
       audio.setLoop(true);
 
@@ -56,6 +66,7 @@ function createFloor() {
       audio.add(helper);
 
       floor.add(audio);
+      floor2.add(audio);
     }
   });
 
@@ -67,8 +78,10 @@ function createFloor() {
       audio1.setBuffer(buffer);
       audio1.setDistanceModel("exponential");
       audio1.setRefDistance(3000);
+      audio1.setRolloffFactor(500);
       audio1.setDirectionalCone(90, 270, 0);
       audio1.setLoop(true);
+      audio1.rotation.set(0, Math.PI / 2, 0);
 
       audio1.play();
 
@@ -76,6 +89,7 @@ function createFloor() {
       audio1.add(helper1);
 
       floor1.add(audio1);
+      floor3.add(audio1);
     }
   });
 

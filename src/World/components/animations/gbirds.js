@@ -63,6 +63,7 @@ function generateBirds() {
       audio.setBuffer(buffer);
       audio.setDistanceModel("exponential");
       audio.setRefDistance(300);
+      audio.setRolloffFactor(200);
       audio.setDirectionalCone(90, 270, 0);
       audio.rotation.set(Math.PI / 4, Math.PI / 2, 0);
       audio.setLoop(true);

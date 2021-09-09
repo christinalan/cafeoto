@@ -43,6 +43,7 @@ function createFlock() {
       audio.setBuffer(buffer);
       audio.setDistanceModel("exponential");
       audio.setRefDistance(300);
+      audio.setRolloffFactor(300);
       audio.setDirectionalCone(90, 180, 0);
       audio.setLoop(true);
 

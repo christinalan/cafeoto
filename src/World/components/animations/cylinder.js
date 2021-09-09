@@ -59,9 +59,12 @@ function createCylinder() {
 
   posaudio1.setMediaElementSource(sig1);
   posaudio1.setRefDistance(40);
+  posaudio1.setRolloffFactor(3);
   posaudio1.setVolume(0.5);
   posaudio1.setDirectionalCone(45, 180, 0);
   posaudio1.rotation.set(Math.PI / 2, Math.PI / 5, 0);
+
+  console.log(posaudio1.getMaxDistance());
 
   const helper1 = new PositionalAudioHelper(posaudio1, 1);
   // posaudio1.add(helper1);
@@ -120,6 +123,7 @@ function createCylinder() {
       audio2.setLoop(true);
       audio2.setVolume(0.5);
       audio2.setRefDistance(100);
+      audio2.setRolloffFactor(3);
       audio2.setDirectionalCone(45, 180, 0);
 
       audio2.play();
@@ -137,6 +141,7 @@ function createCylinder() {
       audio3.setBuffer(buffer);
       audio3.setLoop(true);
       audio3.setVolume(0.5);
+      audio3.setRolloffFactor(5);
       audio3.setRefDistance(100);
       audio3.setDirectionalCone(30, 200, 0);
 
@@ -155,6 +160,7 @@ function createCylinder() {
       audio4.setBuffer(buffer);
       audio4.setLoop(true);
       audio4.setVolume(0.5);
+      audio4.setRolloffFactor(5);
       audio4.setRefDistance(100);
       audio4.setDirectionalCone(45, 180, 0);
 
@@ -173,6 +179,7 @@ function createCylinder() {
       audio5.setBuffer(buffer);
       audio5.setLoop(true);
       audio5.setVolume(0.5);
+      audio5.setRolloffFactor(5);
       audio5.setRefDistance(100);
       audio5.setDirectionalCone(30, 200, 0);
 
@@ -191,6 +198,7 @@ function createCylinder() {
       audio6.setBuffer(buffer);
       audio6.setLoop(true);
       audio6.setVolume(0.5);
+      audio6.setRolloffFactor(3);
       audio6.setRefDistance(100);
       audio6.setDirectionalCone(45, 180, 0);
 
