@@ -1,10 +1,11 @@
-import * as THREE from "../../../js/build/three.module.js";
-import { PositionalAudioHelper } from "../../../js/examples/jsm/helpers/PositionalAudioHelper.js";
+// import * as THREE from "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.module.min.js";
+import * as THREE from "https://unpkg.com/three@0.121.1/build/three.module.js";
+import { PositionalAudioHelper } from "https://threejsfundamentals.org/threejs/resources/threejs/r119/examples/jsm/helpers/PositionalAudioHelper.js";
 import { camera } from "../../World.js";
 // import { audioData } from "../../World.js";
 
 let cylinders = [];
-let audio2, audio3, audio4, audio5, audio6;
+let audio;
 let angle = 0;
 
 let posaudios = [];
@@ -13,7 +14,6 @@ let analyser;
 let sig;
 let posaudio1;
 let data;
-let sig2, sig3, sig4, sig5, sig6;
 
 function wait() {
   setTimeout(sigplay, 10000);
@@ -33,12 +33,17 @@ function mapRange(value, minf, maxf, mins, maxs) {
 
 function createCylinder() {
   const sig1 = document.getElementById("track3");
+  const sig2 = document.getElementById("track4");
+  const sig3 = document.getElementById("track5");
+  const sig4 = document.getElementById("track6");
+  const sig5 = document.getElementById("track7");
+  const sig6 = document.getElementById("track8");
 
   const textureLoader = new THREE.TextureLoader();
   const texture = textureLoader.load("images/textures/sdr_earth.jpeg");
 
   const geo = new THREE.CylinderGeometry(50, 50, 2000, 2000);
-  const geo1 = new THREE.CylinderGeometry(5, 5, 500, 500);
+  const geo1 = new THREE.CylinderGeometry(8, 8, 500, 500);
   const mat = new THREE.MeshLambertMaterial({
     alphaTest: 0.6,
     opacity: 0.7,
@@ -56,156 +61,89 @@ function createCylinder() {
   camera.add(listener);
 
   posaudio1 = new THREE.PositionalAudio(listener);
-
   posaudio1.setMediaElementSource(sig1);
-  posaudio1.setRefDistance(40);
-  posaudio1.setVolume(0.5);
+  posaudio1.setRefDistance(200);
   posaudio1.setDirectionalCone(45, 180, 0);
   posaudio1.rotation.set(Math.PI / 2, Math.PI / 5, 0);
 
   const helper1 = new PositionalAudioHelper(posaudio1, 1);
-  // posaudio1.add(helper1);
+  posaudio1.add(helper1);
 
   analyser = new THREE.AudioAnalyser(posaudio1, 256);
 
   cylinder1.add(posaudio1);
 
-  //loading other sounds
+  const posaudio2 = new THREE.PositionalAudio(listener);
+  posaudio2.setMediaElementSource(sig2);
+  posaudio2.setRefDistance(100);
+  posaudio2.setDirectionalCone(45, 180, 0);
+  posaudio2.rotation.set(Math.PI / 2, 0, 0);
 
-  const cylinder2 = new THREE.Mesh(geo1, mat);
-  cylinder2.rotation.set(Math.random() * Math.PI, 0, Math.random() * Math.PI);
-  cylinder2.position.set(
-    Math.random() * 10,
-    Math.random() * 10,
-    Math.random() * 100
-  );
+  const helper2 = new PositionalAudioHelper(posaudio2, 3);
+  posaudio2.add(helper2);
 
-  const cylinder3 = new THREE.Mesh(geo1, mat);
-  cylinder3.rotation.set(Math.random() * Math.PI, 0, Math.random() * Math.PI);
-  cylinder3.position.set(
-    Math.random() * 10,
-    Math.random() * 10,
-    Math.random() * 100
-  );
+  const posaudio3 = new THREE.PositionalAudio(listener);
+  posaudio3.setMediaElementSource(sig3);
+  posaudio3.setRefDistance(100);
+  posaudio3.setDirectionalCone(45, 180, 0);
+  posaudio3.rotation.set(0, Math.PI / 2, 0);
 
-  const cylinder4 = new THREE.Mesh(geo1, mat);
-  cylinder4.rotation.set(Math.random() * Math.PI, 0, Math.random() * Math.PI);
-  cylinder4.position.set(
-    Math.random() * 10,
-    Math.random() * 20,
-    Math.random() * 200
-  );
+  const helper3 = new PositionalAudioHelper(posaudio3, 3);
+  posaudio3.add(helper3);
 
-  const cylinder5 = new THREE.Mesh(geo1, mat);
-  cylinder5.rotation.set(Math.random() * Math.PI, 0, Math.random() * Math.PI);
-  cylinder5.position.set(
-    Math.random() * 20,
-    Math.random() * 30,
-    Math.random() * 200
-  );
+  const posaudio4 = new THREE.PositionalAudio(listener);
+  posaudio4.setMediaElementSource(sig4);
+  posaudio4.setRefDistance(100);
+  posaudio4.setDirectionalCone(45, 180, 0);
+  posaudio4.rotation.set(0, Math.PI / 3, Math.PI / 2);
 
-  const cylinder6 = new THREE.Mesh(geo1, mat);
-  cylinder6.rotation.set(Math.random() * Math.PI, 0, Math.random() * Math.PI);
-  cylinder6.position.set(
-    Math.random() * 30,
-    Math.random() * 10,
-    Math.random() * 300
-  );
+  const helper4 = new PositionalAudioHelper(posaudio4, 3);
+  posaudio4.add(helper4);
 
-  const audioLoader = new THREE.AudioLoader();
-  audioLoader.load("sounds/snippets/60.mp3", function (buffer) {
-    for (let i = 0; i < 1; i++) {
-      audio2 = new THREE.PositionalAudio(listener);
-      audio2.setBuffer(buffer);
-      audio2.setLoop(true);
-      audio2.setVolume(0.5);
-      audio2.setRefDistance(100);
-      audio2.setDirectionalCone(45, 180, 0);
+  const posaudio5 = new THREE.PositionalAudio(listener);
+  posaudio5.setMediaElementSource(sig5);
+  posaudio5.setRefDistance(100);
+  posaudio5.setDirectionalCone(45, 180, 0);
+  posaudio5.rotation.set(0, 0, Math.PI / 2);
 
-      audio2.play();
+  const helper5 = new PositionalAudioHelper(posaudio5, 3);
+  posaudio5.add(helper5);
 
-      const helper2 = new PositionalAudioHelper(audio2, 1);
-      audio2.add(helper2);
+  const posaudio6 = new THREE.PositionalAudio(listener);
+  posaudio6.setMediaElementSource(sig6);
+  posaudio6.setRefDistance(100);
+  posaudio6.setDirectionalCone(45, 180, 0);
+  posaudio6.rotation.set(Math.PI / 3, Math.PI / 2, Math.PI / 2);
 
-      cylinder2.add(audio2);
-    }
-  });
+  const helper6 = new PositionalAudioHelper(posaudio6, 3);
+  posaudio6.add(helper6);
 
-  audioLoader.load("sounds/148.mp3", function (buffer) {
-    for (let i = 0; i < 1; i++) {
-      audio3 = new THREE.PositionalAudio(listener);
-      audio3.setBuffer(buffer);
-      audio3.setLoop(true);
-      audio3.setVolume(0.5);
-      audio3.setRefDistance(100);
-      audio3.setDirectionalCone(30, 200, 0);
+  posaudios.push(posaudio2, posaudio3, posaudio4, posaudio5, posaudio6);
 
-      audio3.play();
+  //other cylinders
+  for (let i = 0; i < 5; i++) {
+    const cylinder = new THREE.Mesh(geo1, mat);
+    cylinder.rotation.set(
+      Math.random(i) * Math.PI,
+      0,
+      Math.random(i * Math.PI)
+    );
+    cylinder.position.set(
+      Math.random(i) * 100,
+      Math.random(i) * 10,
+      Math.random(i) * 400
+    );
 
-      const helper3 = new PositionalAudioHelper(audio3, 3);
-      audio3.add(helper3);
-
-      cylinder3.add(audio3);
-    }
-  });
-
-  audioLoader.load("sounds/snippets/850.mp3", function (buffer) {
-    for (let i = 0; i < 1; i++) {
-      audio4 = new THREE.PositionalAudio(listener);
-      audio4.setBuffer(buffer);
-      audio4.setLoop(true);
-      audio4.setVolume(0.5);
-      audio4.setRefDistance(100);
-      audio4.setDirectionalCone(45, 180, 0);
-
-      audio4.play();
-
-      const helper4 = new PositionalAudioHelper(audio4, 2);
-      audio4.add(helper4);
-
-      cylinder4.add(audio4);
-    }
-  });
-
-  audioLoader.load("sounds/CITIBike.mp3", function (buffer) {
-    for (let i = 0; i < 1; i++) {
-      audio5 = new THREE.PositionalAudio(listener);
-      audio5.setBuffer(buffer);
-      audio5.setLoop(true);
-      audio5.setVolume(0.5);
-      audio5.setRefDistance(100);
-      audio5.setDirectionalCone(30, 200, 0);
-
-      audio5.play();
-
-      const helper5 = new PositionalAudioHelper(audio4, 1);
-      audio5.add(helper5);
-
-      cylinder5.add(audio5);
-    }
-  });
-
-  audioLoader.load("sounds/Link.mp3", function (buffer) {
-    for (let i = 0; i < 1; i++) {
-      audio6 = new THREE.PositionalAudio(listener);
-      audio6.setBuffer(buffer);
-      audio6.setLoop(true);
-      audio6.setVolume(0.5);
-      audio6.setRefDistance(100);
-      audio6.setDirectionalCone(45, 180, 0);
-
-      audio6.play();
-
-      const helper6 = new PositionalAudioHelper(audio6, 2);
-      audio6.add(helper6);
-
-      cylinder6.add(audio6);
-    }
-  });
-
-  cylinders.push(cylinder2, cylinder3, cylinder4, cylinder5, cylinder6);
+    cylinder.add(posaudios[i]);
+    cylinders.push(cylinder);
+  }
 
   sig1.play();
+  sig2.play();
+  sig3.play();
+  sig4.play();
+  sig5.play();
+  sig6.play();
 
   cylinders.tick = () => {
     var clock = new THREE.Clock();
@@ -240,14 +178,12 @@ function createCylinder() {
           continue;
         }
 
-        cylinders[i].scale.y += Math.sin(y) * 100;
+        cylinders[i].scale.y += Math.sin(y);
 
-        if (Math.sin(v) >= 0 && Math.sin(v) <= Math.PI / 2) {
+        if (Math.sin(v) >= 0 && Math.sin(v) <= Math.PI) {
           cylinders[i].rotation.z += Math.sin(v) * 0.001;
-          cylinders[i].rotation.y += Math.sin(angle) * 0.01;
         } else {
           cylinders[i].rotation.x -= Math.sin(v) * 0.001;
-          cylinders[i].rotation.y -= Math.sin(angle) * 0.01;
         }
 
         const d = velocity.distanceTo(cylinders[i].position);
@@ -258,36 +194,31 @@ function createCylinder() {
 
         cylinders[i].position.add(velocity);
 
-        if (audio2) {
-          audio2.rotation.set(Math.sin(angle) * 0.001, Math.sin(y) * 0.001, 0);
-        }
+        cylinders[i].children[0].rotation.set(
+          otherMap,
+          Math.sin(v),
+          Math.cos(y)
+        );
 
-        if (audio3) {
-          audio3.rotation.set(Math.sin(v) * 0.001, 0, Math.sin(y) * 0.001);
-        }
-
-        if (audio4) {
-          audio4.rotation.set(0, Math.sin(v) * 0.001, Math.sin(angle) * 0.001);
-        }
-
-        if (audio5) {
-          audio5.rotation.set(0, 0, Math.sin(angle) * 0.001);
-        }
-
-        if (audio6) {
-          audio6.rotation.set(0, Math.sin(v) * 0.001, 0);
-        }
-
+        // cylinders[i].children[0].rotation.y += Math.sin(angle) * 10;
+        // cylinders[i].children[0].position.y += Math.sin(angle) * 0.1;
         angle += Math.sin(otherMap);
+
+        // audio1.rotation.x += Math.sin(angle);
+        // audio1.position.y += Math.sin(y) * 0.1;
+        // angle += Math.sin(otherMap);
       }
 
       const d = velocity.distanceTo(cylinders[0].position);
+
+      cylinders[0].scale.y += Math.sin(y);
+      // cylinders[0].rotation.y += Math.sin(y);
 
       if (d > 10 && d < 100) {
         velocity.multiplyScalar(-1);
         acceleration.multiplyScalar(-1);
       }
-
+      cylinders[0].position.add(velocity);
       velocity.add(acceleration);
 
       posaudio1.rotation.z += Math.sin(angle) * y;

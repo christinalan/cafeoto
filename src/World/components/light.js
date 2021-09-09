@@ -1,13 +1,13 @@
-import * as THREE from "../../js/build/three.module.js";
+import * as THREE from "https://unpkg.com/three@0.121.1/build/three.module.js";
 
 function createAmbient() {
-  const ambientLight = new THREE.AmbientLight(0xa2b6d1, 2.8);
+  const ambientLight = new THREE.AmbientLight(0xa2b6d1, 0.8);
 
   return ambientLight;
 }
 
 function createDirectional() {
-  const directionalLight = new THREE.DirectionalLight(0xc3ecff, 1);
+  const directionalLight = new THREE.DirectionalLight(0xc3ecff, 0.7);
   directionalLight.position.set(0, 10, 5);
 
   const d = 5;

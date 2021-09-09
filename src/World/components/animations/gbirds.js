@@ -1,5 +1,5 @@
-import * as THREE from "../../../js/build/three.module.js";
-import { PositionalAudioHelper } from "../../../js/examples/jsm/helpers/PositionalAudioHelper.js";
+import * as THREE from "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.module.min.js";
+import { PositionalAudioHelper } from "https://threejsfundamentals.org/threejs/resources/threejs/r119/examples/jsm/helpers/PositionalAudioHelper.js";
 import { scene } from "../../World.js";
 import { camera } from "../../World.js";
 import { analyser } from "../animations/cylinder.js";
