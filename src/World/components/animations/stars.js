@@ -1,16 +1,15 @@
-import * as THREE from "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.module.min.js";
-import { setStream } from "../audio.js";
+import * as THREE from "../../../js/build/three.module.js";
+import { PositionalAudioHelper } from "../../../js/examples/jsm/helpers/PositionalAudioHelper.js";
 import { createRenderer } from "../../systems/renderer.js";
 import { camera } from "../../World.js";
 import { scene } from "../../World.js";
+import { analyser } from "../animations/cylinder.js";
 
-let audioStream;
 let geometryT, materialT, dataTexture;
-let fft, analyser, data, dataFreq, dataAvg;
-let star, stars;
+let fft, data;
+let starling, starlings;
 let screens = [];
-let textures = [];
-let texture, texture2, texture3, texture4, texture5;
+let texture;
 let angle = 0;
 let angleV = 0;
 let angleA = 0;
@@ -27,95 +26,110 @@ function onMouseDown(event) {
   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 }
 
-function createStar() {
+function createStarling() {
   clock = new THREE.Clock();
   mouse = new THREE.Vector2();
   const renderer = createRenderer();
   const textureLoader = new THREE.TextureLoader();
 
-  texture = textureLoader.load("/images/textures/russian.png");
-  texture2 = textureLoader.load("/images/textures/texture.jpeg");
-  texture3 = textureLoader.load("/images/textures/Contestiathmb.png");
-  texture4 = textureLoader.load("/images/textures/3GWCDMA.png");
-  texture5 = textureLoader.load("/images/textures/Mpp4800.png");
-  textures.push(texture, texture2, texture3, texture4, texture5);
-
-  audioStream = setStream();
+  texture = textureLoader.load("images/textures/russian.png");
 
   fft = 128;
-  analyser = new THREE.AudioAnalyser(audioStream, fft);
-  dataFreq = analyser.getFrequencyData();
+  data = analyser.getFrequencyData();
 
   const format = renderer.capabilities.isWebGL2
     ? THREE.RedFormat
     : THREE.LuminanceFormat;
 
-  dataTexture = new THREE.DataTexture(dataFreq, fft / 10, 1, format);
+  dataTexture = new THREE.DataTexture(data, fft / 20, 1, format);
 
-  const octRadius = 2;
+  const octRadius = 20;
 
   geometryT = new THREE.OctahedronGeometry(octRadius);
-  geometryT.translate(-100, 10, -200);
+  geometryT.translate(0, 30, -1000);
 
-  function makeInstance(geometryT, sTexture, x, y, z) {
+  function makeInstance(geometryT, texture, x, y, z) {
     materialT = new THREE.MeshLambertMaterial({
-      color: 0x6a6a6a,
-      opacity: 0.8,
-      transparent: true,
-      map: sTexture,
+      color: 0xb4ff75,
+      map: texture,
       emissive: 0xffffff,
       emissiveMap: dataTexture,
     });
 
-    star = new THREE.Mesh(geometryT, materialT);
+    starling = new THREE.Mesh(geometryT, materialT);
 
-    scene.add(star);
+    scene.add(starling);
 
-    star.position.x = x;
-    star.position.y = y;
-    star.position.z = z;
+    starling.position.x = x;
+    starling.position.y = y;
+    starling.position.z = z;
 
-    return star;
+    starling.rotation.x = Math.PI / 2;
+
+    return starling;
   }
 
-  stars = [
+  starlings = [
     makeInstance(geometryT, texture, 0, 0, 0),
+    makeInstance(geometryT, texture, 0, 10, -100),
+    makeInstance(geometryT, texture, 0, 10, -200),
     makeInstance(
       geometryT,
-      texture2,
+      texture,
       -Math.random() * 10,
       Math.random() * 30,
       Math.random() * 20
     ),
     makeInstance(
       geometryT,
-      texture3,
+      texture,
+      Math.random() * 15,
       Math.random() * 20,
-      -Math.random() * 10,
-      Math.random() * 10
+      Math.random() * 30
     ),
     makeInstance(
       geometryT,
-      texture4,
+      texture,
+      Math.random() * 20,
+      -Math.random() * 10,
+      Math.random() * 50
+    ),
+    makeInstance(
+      geometryT,
+      texture,
+      Math.random() * 40,
+      -Math.random() * 20,
+      Math.random() * 70
+    ),
+    makeInstance(
+      geometryT,
+      texture,
       -Math.random() * 30,
       Math.random() * 20,
       Math.random() * -30
     ),
     makeInstance(
       geometryT,
-      texture5,
+      texture,
       Math.random() * 10,
       Math.random() * 30,
-      -Math.random() * 20
+      -Math.random() * 50
+    ),
+    makeInstance(
+      geometryT,
+      texture,
+      Math.random() * 100,
+      Math.random() * 30,
+      -Math.random() * 100
     ),
   ];
 
   window.addEventListener("click", onMouseDown, false);
 
-  stars.tick = () => {
-    analyser.getFrequencyData();
-    data = analyser.getFrequencyData();
-    dataAvg = analyser.getAverageFrequency();
+  starlings.tick = () => {
+    var clock = new THREE.Clock();
+    var elapsedTime = clock.getElapsedTime();
+    const dataAvg = analyser.getAverageFrequency();
 
     const displacement = new THREE.Vector3(0, speed, 0);
     const target = new THREE.Vector3();
@@ -134,20 +148,18 @@ function createStar() {
     for (let i = 0; i < intersects.length; i++) {
       const intersect = intersects[0];
 
-      const screenGeo = new THREE.SphereGeometry(3, 20, 10);
-      screenGeo.translate(-200, 30, -210);
+      const screenGeo = new THREE.SphereGeometry(1, 20, 10);
+      screenGeo.translate(0, 30, -300);
       const screenMaterial = new THREE.MeshLambertMaterial({
         color: 0xffffff,
-        opacity: 0.3,
-        transparent: true,
-        map: textures[0],
+        map: texture,
       });
 
       const screen = new THREE.Mesh(screenGeo, screenMaterial);
       screen.position
         .copy(intersect.point)
         .add(intersect.face.normal)
-        .divideScalar(Math.sin(dataAvg));
+        .divideScalar(Math.sin(dataAvg) * 0.01);
 
       scene.add(screen);
 
@@ -179,33 +191,33 @@ function createStar() {
         dataAvg
       );
 
-      stars.forEach((star) => {
+      starlings.forEach((starling) => {
         materialT.emissiveMap.needsUpdate = true;
-        star.scale.y = (Math.sin(angle) * dataAvg) / 15;
-        star.scale.z = (Math.sin(angle) * dataAvg) / 30;
+        starling.scale.x = (Math.sin(angle) * dataAvg) / 20;
+        starling.scale.z = (Math.sin(angle) * dataAvg) / 20;
 
-        star.rotation.z = Math.sin(y);
+        starling.rotation.x += Math.sin(y);
+        starling.rotation.y += Math.sin(y);
 
-        star.position.z = Math.sin(angle) * 0.01;
+        // starling.position.z = Math.sin(angle) * 0.01;
 
-        angle += Math.sin(newMap) * y;
+        angle += Math.sin(newMap) * y * 0.001;
 
-        angle += angleV;
-        angleV += otherMap;
+        angle += angleV * 0.01;
+        angleV += otherMap * 0.01;
       });
 
       for (let i = 0; i < screens.length; i++) {
         screens[i].scale.y += newMap * 5;
-        screens[i].position.z = 3 * Math.sin(angle);
+        screens[i].position.z = 0.01 * Math.sin(angle);
         angle += Math.sin(newMap) * y;
 
         angle += angleV;
         angleV += otherMap;
-        // stars.push(screens[i]);
       }
     }
   };
-  return stars;
+  return starlings;
 }
 
-export { createStar };
+export { createStarling };
