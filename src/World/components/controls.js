@@ -1,8 +1,5 @@
 import * as THREE from "../../js/build/three.module.js";
 import { PointerLockControls } from "../../js/examples/jsm/controls/PointerLockControls.js";
-import { scene } from "../World.js";
-import { camera } from "../World.js";
-// import { values } from "../../main_new.js";
 
 let objects = [];
 let raycaster;
@@ -75,32 +72,11 @@ function createControls(camera, canvas) {
         break;
 
       case "Space":
-        if (canJump === true) velocity.y += 350;
+        if (canJump === true) velocity.y += 250;
         canJump = false;
         break;
     }
   };
-
-  // const onPhoneF = function () {
-  //   switch (true) {
-  //     case values.beta <= 90:
-  //       moveForward = true;
-  //       console.log(moveForward);
-  //       break;
-
-  //     case values.gamma <= 0:
-  //       moveLeft = true;
-  //       break;
-
-  //     case values.beta >= 90:
-  //       moveBackward = true;
-  //       break;
-
-  //     case values.gamma >= 0:
-  //       moveRight = true;
-  //       break;
-  //   }
-  // };
 
   const onKeyUp = function (event) {
     switch (event.code) {
@@ -143,7 +119,7 @@ function createControls(camera, canvas) {
 
       const onObject = intersections.length > 0;
 
-      const delta = (time - prevTime) / 1000;
+      const delta = (time - prevTime) / 5000;
 
       velocity.x -= velocity.x * 10.0 * delta;
       velocity.z -= velocity.z * 10.0 * delta;
@@ -155,8 +131,8 @@ function createControls(camera, canvas) {
       direction.normalize(); // this ensures consistent movements in all directions
 
       if (moveForward || moveBackward)
-        velocity.z -= direction.z * 400.0 * delta;
-      if (moveLeft || moveRight) velocity.x -= direction.x * 400.0 * delta;
+        velocity.z -= direction.z * 100.0 * delta;
+      if (moveLeft || moveRight) velocity.x -= direction.x * 100.0 * delta;
 
       if (onObject === true) {
         velocity.y = Math.max(0, velocity.y);
