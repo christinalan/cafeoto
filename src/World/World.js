@@ -17,14 +17,11 @@ import { createRenderer } from "./systems/renderer.js";
 import { Resizer } from "./systems/Resizer.js";
 import { Loop } from "./systems/Loop.js";
 
-import { checkClipping } from "./components/audio.js";
-
 let camera;
 let renderer;
 let scene;
 let loop;
 let controls;
-let audioData;
 
 class World {
   constructor(container) {
@@ -106,4 +103,4 @@ class World {
   }
 }
 
-export { World, camera, scene, controls, renderer, audioData };
+export { World, camera, scene, controls, renderer };

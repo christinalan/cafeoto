@@ -64,8 +64,6 @@ function createCylinder() {
   posaudio1.setDirectionalCone(45, 180, 0);
   posaudio1.rotation.set(Math.PI / 2, Math.PI / 5, 0);
 
-  console.log(posaudio1.getMaxDistance());
-
   const helper1 = new PositionalAudioHelper(posaudio1, 1);
   // posaudio1.add(helper1);
 
