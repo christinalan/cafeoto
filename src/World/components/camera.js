@@ -33,7 +33,7 @@ function createCamera() {
   posFolder.add(camera.rotation, "z", 0, Math.PI, 0.01).name("Rotation Z");
 
   posFolder
-    .add(options, "focalLength", 0.1, 100, 0.01)
+    .add(options, "focalLength", 1, 80, 0.01)
     .name("Focal Length")
     .onChange(matChanger);
   posFolder.open();

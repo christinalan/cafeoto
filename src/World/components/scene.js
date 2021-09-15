@@ -1,5 +1,4 @@
 import * as THREE from "../../js/build/three.module.js";
-import { camera } from "../World.js";
 
 let texture;
 function createScene() {

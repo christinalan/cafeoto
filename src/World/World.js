@@ -18,6 +18,8 @@ import { createRenderer } from "./systems/renderer.js";
 import { Resizer } from "./systems/Resizer.js";
 import { Loop } from "./systems/Loop.js";
 
+import { createEffect } from "./systems/postfx.js";
+
 let camera;
 let renderer;
 let scene;
@@ -34,6 +36,8 @@ class World {
 
     controls = createControls(camera, renderer.domElement);
     scene.add(controls.getObject());
+
+    // const composer = createEffect();
 
     // const orbitControls = createOrbitControls(camera, renderer.domElement);
 
@@ -59,6 +63,7 @@ class World {
       cylinders,
       gbirds,
       starlings,
+
       controls
     );
 
