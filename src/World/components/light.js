@@ -1,7 +1,28 @@
 import * as THREE from "../../js/build/three.module.js";
 
+let time = 0;
+let delta = 0;
+
 function createAmbient() {
-  const ambientLight = new THREE.AmbientLight(0xa2b6d1, 2.8);
+  let clock = new THREE.Clock();
+  const ambientLight = new THREE.AmbientLight(0xa2b6d1, 0.1);
+
+  ambientLight.tick = () => {
+    delta = clock.getDelta();
+    var elapsedTime = clock.getElapsedTime();
+    var speed = 1;
+
+    if (ambientLight.intensity > 11) {
+      speed *= 1;
+    } else {
+      speed *= 0.003;
+    }
+
+    time += delta * speed;
+
+    ambientLight.intensity = Math.abs(Math.sin(time) * 100);
+    console.log(time, ambientLight.intensity);
+  };
 
   return ambientLight;
 }

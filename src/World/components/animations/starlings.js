@@ -76,8 +76,8 @@ function createStarling() {
 
       audio.setBuffer(buffer);
       audio.setDistanceModel("exponential");
-      audio.setRefDistance(200);
-      audio.setRolloffFactor(100);
+      audio.setRefDistance(100);
+      audio.setRolloffFactor(50);
       audio.setDirectionalCone(90, 270, 0);
       audio.rotation.set(Math.PI / 2, Math.PI / 2, 0);
       audio.setLoop(true);
@@ -105,42 +105,6 @@ function createStarling() {
     speed += angleA;
 
     const delta = clock.getDelta();
-
-    const raycaster = new THREE.Raycaster();
-
-    raycaster.setFromCamera(mouse, camera);
-
-    const intersects = raycaster.intersectObjects(scene.children);
-
-    // for (let i = 0; i < intersects.length; i++) {
-    //   const intersect = intersects[0];
-
-    //   const screenGeo = new THREE.SphereGeometry(1, 20, 10);
-    //   screenGeo.translate(0, 30, -300);
-    //   const screenMaterial = new THREE.MeshLambertMaterial({
-    //     color: 0xffffff,
-    //     map: texture,
-    //   });
-
-    //   const screen = new THREE.Mesh(screenGeo, screenMaterial);
-    //   screen.position
-    //     .copy(intersect.point)
-    //     .add(intersect.face.normal)
-    //     .divideScalar(Math.sin(dataAvg) * 0.01);
-
-    //   scene.add(screen);
-
-    //   screens.push(screen);
-
-    //   //displacement
-    //   displacement.copy(velocity).multiplyScalar(delta);
-    //   //target
-    //   target.copy(intersect.point).add(displacement);
-
-    //   while (screens.length > 40) {
-    //     screens.splice(0, 1);
-    //   }
-    // }
 
     /////////////ANALYZER STARTS HERE
 
@@ -174,15 +138,6 @@ function createStarling() {
         angle += angleV * 0.01;
         angleV += otherMap * 0.01;
       });
-
-      //   for (let i = 0; i < screens.length; i++) {
-      //     screens[i].scale.y += newMap * 5;
-      //     screens[i].position.z = 0.01 * Math.sin(angle);
-      //     angle += Math.sin(newMap) * y;
-
-      //     angle += angleV;
-      //     angleV += otherMap;
-      //   }
     }
   };
   return starlings;

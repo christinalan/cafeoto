@@ -12,6 +12,7 @@ import { createBirds } from "./components/animations/birds2.js";
 import { createLineBird } from "./components/animations/birds.js";
 import { createFlock } from "./components/animations/birds3.js";
 import { generateBirds } from "./components/animations/gbirds.js";
+import { generateBirds2 } from "./components/animations/gbirds2.js";
 import { createStarling } from "./components/animations/starlings.js";
 
 import { createRenderer } from "./systems/renderer.js";
@@ -51,6 +52,7 @@ class World {
     const flock = createFlock();
     const cylinders = createCylinder();
     const gbirds = generateBirds();
+    const gbirds2 = generateBirds2();
     const starlings = createStarling();
 
     loop.updatables.push(
@@ -62,8 +64,9 @@ class World {
       flock,
       cylinders,
       gbirds,
+      gbirds2,
       starlings,
-
+      ambientL,
       controls
     );
 
@@ -92,6 +95,10 @@ class World {
       //   gbirds.splice(i, 1);
       //   gbirds.remove(i);
       // }
+    }
+
+    for (let i = 0; i < gbirds2.length; i++) {
+      scene.add(gbirds2[i]);
     }
 
     for (let i = 0; i < starlings.length; i++) {
