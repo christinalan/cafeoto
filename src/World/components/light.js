@@ -21,7 +21,7 @@ function createAmbient() {
     time += delta * speed;
 
     ambientLight.intensity = Math.abs(Math.sin(time) * 100);
-    console.log(time, ambientLight.intensity);
+    // console.log(time, ambientLight.intensity);
   };
 
   return ambientLight;
