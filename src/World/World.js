@@ -1,19 +1,17 @@
+// import * as THREE from "../../js/build/three.module.js";
+
 import { createCamera } from "./components/camera.js";
 import { createScene } from "./components/scene.js";
 import { createControls } from "./components/controls.js";
 import { createOrbitControls } from "./components/orbitcontrols.js";
 // import { createDeviceControls } from "./components/devicecontrols.js";
 
-import { createAmbient, createDirectional } from "./components/light.js";
+import { createAmbient, createDirectional, createStaticLight } from "./components/light.js";
 import { createFloor } from "./components/building.js";
 
-import { createCylinder } from "./components/animations/cylinder.js";
-import { createBirds } from "./components/animations/birds2.js";
-import { createLineBird } from "./components/animations/birds.js";
-import { createFlock } from "./components/animations/birds3.js";
-import { generateBirds } from "./components/animations/gbirds.js";
-import { generateBirds2 } from "./components/animations/gbirds2.js";
-import { createStarling } from "./components/animations/starlings.js";
+import { createReflectiveAudioPipes } from "./components/animations/pipes.js";
+import { createSphericalPipes } from "./components/animations/circlePipes.js"
+import { createVideoCube } from "./components/animations/video.js"
 
 import { createRenderer } from "./systems/renderer.js";
 import { Resizer } from "./systems/Resizer.js";
@@ -27,6 +25,33 @@ let scene;
 let loop;
 let controls;
 
+function waitForAnalyserData(getAnalyser, {
+  timeoutMs = 8000,   // bail after 8s if nothing shows up
+  intervalMs = 120,   // poll ~8x/sec
+  requireNonZeroSample = true, // ensure at least one non-zero bin before resolving
+} = {}) {
+  return new Promise((resolve, reject) => {
+    const start = performance.now();
+    const timer = setInterval(() => {
+      const an = getAnalyser && getAnalyser();
+      if (an && typeof an.getFrequencyData === "function") {
+        const arr = an.getFrequencyData();
+        if (arr && arr.length) {
+          if (!requireNonZeroSample || arr.some(v => v > 0)) {
+            clearInterval(timer);
+            resolve(an);
+            return;
+          }
+        }
+      }
+      if (performance.now() - start > timeoutMs) {
+        clearInterval(timer);
+        reject(new Error("Analyser never produced data (timeout)"));
+      }
+    }, intervalMs);
+  });
+}
+
 class World {
   constructor(container) {
     camera = createCamera();
@@ -35,75 +60,64 @@ class World {
     loop = new Loop(camera, scene, renderer);
     container.append(renderer.domElement);
 
-    controls = createControls(camera, renderer.domElement);
-    scene.add(controls.getObject());
-
+    // controls = createControls(camera, renderer.domElement);
+    // scene.add(controls.getObject());
     // const composer = createEffect();
+    
+    const orbitControls = createOrbitControls(camera, renderer.domElement);
 
-    // const orbitControls = createOrbitControls(camera, renderer.domElement);
-
+    orbitControls.maxDistance = 1500; // default might be ~1000
+    
     const ambientL = createAmbient();
     const dirL = createDirectional();
-    const floors = createFloor();
+    // const staticL = createStaticLight();
+    // const pipes = createReflectiveAudioPipes({ scene, camera, renderer, audioUrl: "sounds/CafeOTO.mp3" });
+    const circlePipes = createSphericalPipes({scene, camera, renderer, audioUrl: "sounds/CafeOTO.mp3"})
+    const videoCube = createVideoCube()
+    const floor = createFloor({renderer});
+    
+    ambientL.attachRenderer(renderer);
 
-    //animations
-    const birds = createBirds();
-    const birdLine = createLineBird();
-    const flock = createFlock();
-    const cylinders = createCylinder();
-    const gbirds = generateBirds();
-    const gbirds2 = generateBirds2();
-    const starlings = createStarling();
+
+    scene.add( ambientL, dirL, videoCube.mesh, floor ); //took out birdLine, birds, pipes.group, circlePipes.group, 
 
     loop.updatables.push(
-      camera,
+      // camera,
       scene,
-      floors,
-      birds,
-      birdLine,
-      flock,
-      cylinders,
-      gbirds,
-      gbirds2,
-      starlings,
+      // circlePipes,
+      videoCube,
       ambientL,
-      controls
+      dirL,
+      floor,
+      // controls,
+      {tick: () => orbitControls.update() }
     );
 
-    scene.add(ambientL, birds, birdLine);
+    videoCube.setCenter(0, 0, 0);
+    videoCube.setRotate(0, 0.002, 0);
 
-    for (let i = 0; i < floors.length; i++) {
-      scene.add(floors[i]);
-    }
+    waitForAnalyserData(() => circlePipes.analyser)
+    .then((analyser) => {
+      // camera.attachAnalyser?.(analyser);
+      ambientL.attachAnalyser(analyser);
+      dirL.attachAnalyser(analyser);
+      scene.attachAnalyser(analyser)
+      console.log("[World] analyser attached to camera & lights");
+    })
+    .catch(err => {
+      console.warn("[World] analyser not ready:", err.message);
+      // Optional: attach anyway so they at least exist
+      const an = circlePipes.analyser;
+      if (an) {
+        camera.attachAnalyser?.(an);
+        ambientL.attachAnalyser(an);
+        dirL.attachAnalyser(an);
+      }
+    });
 
-    for (let i = 0; i < cylinders.length; i++) {
-      scene.add(cylinders[i]);
-    }
-
-    for (let i = 0; i < flock.length; i++) {
-      scene.add(flock[i]);
-    }
-
-    for (let i = 0; i < gbirds.length; i++) {
-      scene.add(gbirds[i]);
-
-      // while (gbirds.length > 50) {
-      //   gbirds.splice(0, 1);
-      // }
-
-      // for (let i = gbirds.length - 1; i >= 0; i--) {
-      //   gbirds.splice(i, 1);
-      //   gbirds.remove(i);
-      // }
-    }
-
-    for (let i = 0; i < gbirds2.length; i++) {
-      scene.add(gbirds2[i]);
-    }
-
-    for (let i = 0; i < starlings.length; i++) {
-      scene.add(starlings[i]);
-    }
+    // for (let i = 0; i < floors.length; i++) {
+    //   scene.add(floors[i]);
+    // }
 
     const resizer = new Resizer(container, camera, renderer);
   }
@@ -111,6 +125,7 @@ class World {
   // 2. Render the scene
   render() {
     renderer.render(scene, camera);
+
   }
 
   start() {
@@ -122,4 +137,4 @@ class World {
   }
 }
 
-export { World, camera, scene, controls, renderer };
+export { World, camera, scene, renderer, controls };

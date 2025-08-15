@@ -42,67 +42,29 @@
     <link rel="shortcut icon" type="image/jpg" href="favicon.ico" />
   </head>
   <body style="font-family: monospace">
-    <div id="overlay" style="margin: 0 auto">
-      <button id="startButton" style="font-family: monospace">start</button>
-      <audio id="audio" autoplay controls muted style="display: none"></audio>
-    </div>
-
-    <div id="blocker" style="position: fixed">
+    <div id="blocker" style="position: relative">
       <div id="instructions">
-        <p style="font-size: 36px; color: white; padding: 20px; margin-top: 0%">
-          Click start to play
-        </p>
-        <p
-          style="
-            color: white;
-            padding: 20px;
-            font-size: 1.5em;
-            line-height: 2.3;
-            margin-top: -4%;
-          "
-        >
-          Cursor: <img src="images/icons/esc.png" /> <br />
-          Move: <img src="images/icons/w.png" /><img
-            src="images/icons/a.png"
-          /><img src="images/icons/s.png" /><img src="images/icons/d.png" /> or
-          <img src="images/icons/up.png" />
-          <img src="images/icons/left.png" />
-          <img src="images/icons/down.png" />
-          <img src="images/icons/right.png" /><br />
-          Jump: <img id="space" src="images/icons/space.png" /><br />
-          Look: MOUSE
+        <p style="font-size: 36px; color: white; padding-top: 30px; margin: 0; padding: 20px 0 5px 20px;">
+          Laenz @ Cafe OTO 18 July 2025
         </p>
       </div>
     </div>
+    <div id="overlay" style="margin-top: 10px;">
+      <button id="startButton" style="font-family: monospace; margin-top: 0;">Enter</button>
+      <audio id="audio" autoplay controls muted style="display: none"></audio>
+    </div>
+
 
     <div id="container"></div>
 
-    <audio
+    <!-- <audio
       loop
       id="track1"
-      src="sounds/st_1.mp3"
+      src="sounds/60.mp3"
       type="audio/mpeg"
       preload="auto"
       style="display: none"
-    ></audio>
-
-    <audio
-      loop
-      id="track2"
-      src="sounds/st_2.wav"
-      type="audio/mpeg"
-      preload="auto"
-      style="display: none"
-    ></audio>
-
-    <audio
-      loop
-      controls
-      id="track3"
-      src="sounds/noaa15_0811.mp3"
-      preload="auto"
-      style="display: none"
-    ></audio>
+    ></audio> -->
 
     <script id="vertexShader" type="x-shader/x-vertex">
       precision highp float;

@@ -142,7 +142,9 @@ function createControls(camera, canvas) {
       controls.moveRight(-velocity.x * delta);
       controls.moveForward(-velocity.z * delta);
 
-      controls.getObject().position.y += velocity.y * delta; // new behavior
+      // controls.getObject().position.y += velocity.y * delta; // new behavior
+      controls.getObject().position.set(100, 500, 0); // start higher
+      controls.getObject().rotation.x = -Math.PI / 4; // tilt down if needed
 
       if (controls.getObject().position.y < 10) {
         velocity.y = 0;

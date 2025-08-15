@@ -1,118 +1,141 @@
 import * as THREE from "../../js/build/three.module.js";
-import { PositionalAudioHelper } from "../../js/examples/jsm/helpers/PositionalAudioHelper.js";
-import { camera } from "../World.js";
 
-let floors = [];
-let floor, floor1, floor2, floor3;
-let audio, audio1;
+function createFloor({renderer}) {
+  const clock = new THREE.Clock();
 
-function createFloor() {
-  let clock = new THREE.Clock();
-  const textureLoader = new THREE.TextureLoader();
-  const texture = textureLoader.load("images/textures/3GWCDMA.png");
-  const texture1 = textureLoader.load("images/textures/Mpp4800.png");
+  // ---- load textures 1..44 ----
+  const loader = new THREE.TextureLoader();
+  const textures = [];
+  for (let i = 1; i <= 44; i++) {
+    const tex = loader.load(`images/textures/gqrx/${i}.png`);
+    // If your PNGs are sRGB, you can uncomment this:
+    // tex.encoding = THREE.sRGBEncoding;
+    tex.wrapS = THREE.RepeatWrapping;
+    tex.wrapT = THREE.RepeatWrapping;
+    tex.repeat.set(1, 2);
+    tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+    tex.magFilter = THREE.LinearFilter;  // sharper without pixelation
+    tex.minFilter = THREE.LinearMipmapLinearFilter;
+    textures.push(tex);
+  }
 
-  const floorGeometry = new THREE.PlaneGeometry(100, 1000);
-  const floorMaterial = new THREE.MeshLambertMaterial({
-    color: 0xffffff,
-    map: texture,
+  // ---- materials (Phong, reacts to lights) ----
+  const makeMat = (map, opacity = 1) =>
+    new THREE.MeshPhongMaterial({
+      map,
+      side: THREE.DoubleSide,
+      shininess: 70,
+      specular: new THREE.Color(0x888888),
+      transparent: true,
+      opacity,
+      depthWrite: false,          // prevent z-fighting while crossfading
+    });
+
+  const matA = makeMat(textures[0], 1);
+  const matB = makeMat(textures[1], 0);
+
+  // ---- geometry ----
+  const geom = new THREE.PlaneGeometry(10000, 10000);
+
+  // Use a group so we can return a single object with a tick()
+  const group = new THREE.Group();
+
+  const floorA = new THREE.Mesh(geom, matA);
+  const floorB = new THREE.Mesh(geom, matB);
+
+  // Match your original transform
+  [floorA, floorB].forEach(m => {
+    m.rotation.set(Math.PI / 2, Math.PI / 2, 0);
+    m.position.set(-150, 400, 0);
+    m.receiveShadow = true;
+    m.renderOrder = 1; // stable draw order during fade
   });
 
-  const floorMaterial1 = new THREE.MeshLambertMaterial({
-    color: 0xffffff,
-    map: texture1,
-  });
+  // Slight polygon offset on B so the GPU is extra sure about ordering
+  floorB.material.polygonOffset = true;
+  floorB.material.polygonOffsetFactor = -1;
+  floorB.material.polygonOffsetUnits = -1;
 
-  floor = new THREE.Mesh(floorGeometry, floorMaterial);
-  floor.rotation.x = Math.PI * -0.5;
-  floor.position.set(-50, -150, -200);
-  floor.receiveShadow = true;
+  group.add(floorA, floorB);
 
-  floor1 = new THREE.Mesh(floorGeometry, floorMaterial1);
-  floor1.rotation.set(Math.PI * -0.5, 0, 0);
-  floor1.position.set(100, -100, -600);
+  // ---- fade timing ----
+  const SWITCH_SEC = 15;    // time between fade starts
+  const FADE_SEC   = 10;   // crossfade duration
 
-  floor2 = new THREE.Mesh(floorGeometry, floorMaterial);
-  floor2.rotation.set(Math.PI * -0.5, 0, 0);
-  floor2.position.set(100, 0, -100);
+  let currentIndex = 0;
+  let nextIndex    = 1;
+  let isFading     = false;
+  let fadeStartMs  = 0;
+  let lastSwitchMs = performance.now();
 
-  floor3 = new THREE.Mesh(floorGeometry, floorMaterial1);
-  floor3.rotation.set(Math.PI * -0.5, 0, 0);
-  floor3.position.set(-100, -25, -100);
+  function pickNextIndex(exclude) {
+    let idx = Math.floor(Math.random() * textures.length);
+    if (idx === exclude) idx = (idx + 1) % textures.length;
+    return idx;
+  }
 
-  floors.push(floor, floor1, floor2, floor3);
+  function startFade(now) {
+    nextIndex = pickNextIndex(currentIndex);
+    // Keep scroll in sync for seamless transition
+    matB.map = textures[nextIndex];
+    matB.map.offset.copy(matA.map.offset);
+    matB.needsUpdate = true;
 
-  //audio attachment
+    isFading = true;
+    fadeStartMs = now;
+    lastSwitchMs = now;
+  }
 
-  const audioLoader = new THREE.AudioLoader();
+  // ---- optional motion of the texture itself ----
+  const RIPPLE_SPEED = 0.005;
+  const RIPPLE_AMP   = 10;
+  const SCROLL_SPEED = 0.15;
 
-  const listener = new THREE.AudioListener();
+  group.tick = () => {
+    const dt = clock.getDelta();
+    const elapsed = clock.getElapsedTime();
 
-  camera.add(listener);
+    // your original floor bobbing on Z
+    const speed = 0.3;
+    group.position.z += Math.sin(elapsed) * 2;
 
-  audioLoader.load("sounds/st_1.mp3", function (buffer) {
-    for (let i = 0; i < 1; i++) {
-      audio = new THREE.PositionalAudio(listener);
-      audio.setBuffer(buffer);
-      audio.setDistanceModel("exponential");
-      audio.setRefDistance(2000);
-      audio.setRolloffFactor(500);
-      audio.setDirectionalCone(90, 270, 0);
-      audio.setLoop(true);
-
-      audio.play();
-
-      const helper = new PositionalAudioHelper(audio, 20);
-      audio.add(helper);
-
-      floor.add(audio);
-      floor2.add(audio);
+    // OPTIONAL: “waterfall” scroll and tiny horizontal ripple
+    const t = performance.now() / 1000;
+    if (matA.map) {
+      matA.map.offset.x = Math.sin(t * RIPPLE_SPEED) * RIPPLE_AMP;
+      matA.map.offset.y -= dt * SCROLL_SPEED;
     }
-  });
-
-  const audioLoader1 = new THREE.AudioLoader();
-
-  audioLoader1.load("sounds/st_2.wav", function (buffer) {
-    for (let i = 0; i < 1; i++) {
-      audio1 = new THREE.PositionalAudio(listener);
-      audio1.setBuffer(buffer);
-      audio1.setDistanceModel("exponential");
-      audio1.setRefDistance(3000);
-      audio1.setRolloffFactor(500);
-      audio1.setDirectionalCone(90, 270, 0);
-      audio1.setLoop(true);
-      audio1.rotation.set(0, Math.PI / 2, 0);
-
-      audio1.play();
-
-      const helper1 = new PositionalAudioHelper(audio1, 20);
-      audio1.add(helper1);
-
-      floor1.add(audio1);
-      floor3.add(audio1);
+    if (matB.map) {
+      matB.map.offset.x = Math.sin(t * RIPPLE_SPEED) * RIPPLE_AMP;
+      matB.map.offset.y -= dt * SCROLL_SPEED;
     }
-  });
 
-  floors.tick = () => {
-    var delta = clock.getDelta();
-    var elapsedTime = clock.getElapsedTime();
+    // schedule fade
+    const now = performance.now();
+    if (!isFading && now - lastSwitchMs >= SWITCH_SEC * 1000) {
+      startFade(now);
+    }
 
-    for (let floor of floors) {
-      var speed = 0.3;
-      floor.position.z += Math.sin(elapsedTime) * 2;
-      // if (audio) {
-      //   floor.children[0].rotation.y += Math.sin(Math.PI / 4) * speed;
+    // drive crossfade
+    if (isFading) {
+      const u = Math.min((now - fadeStartMs) / (FADE_SEC * 1000), 1);
+      matA.opacity = 1 - u;
+      matB.opacity = u;
 
-      //   if (
-      //     floor.children[0].rotation.y >= Math.PI / 4 &&
-      //     floor.children[0].rotation.y <= 0
-      //   ) {
-      //     speed *= -1;
-      //   }
-      // }
+      if (u >= 1) {
+        // commit: B becomes new A
+        currentIndex = nextIndex;
+        matA.map = matB.map;
+        matA.opacity = 1;
+        matA.needsUpdate = true;
+
+        matB.opacity = 0;
+        isFading = false;
+      }
     }
   };
-  return floors;
+
+  return group;
 }
 
 export { createFloor };
